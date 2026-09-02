@@ -16,7 +16,9 @@ can keep using the machine indefinitely. The firmware is fine, only the
 phone-side software is rotting. We use the official cartridges, so there is no
 cartridge auth or colour science to break, just reproduce the app's side of the
 conversation. The protocol is fully worked out, from a capture of the real app
-plus the decompiled native SDK.
+plus the decompiled native SDK. The full reverse engineering process and
+protocol details are written up at
+[smallwat3r.com/blog/ysl-rouge-sur-mesure](https://smallwat3r.com/blog/ysl-rouge-sur-mesure).
 
 Bonus: it unlocks combinations the app was jailing. The app only allowed
 specific cartridges to be used together, here any three cartridges can be
