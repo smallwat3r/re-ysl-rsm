@@ -1,0 +1,24 @@
+# Replaces the packaged hostapd.service: that one waits for network.target,
+# which sits behind NetworkManager's ~25s start, while the hotspot only needs
+# wlan0 to exist (NetworkManager never touches it, see NetworkManager.conf).
+# No ordering at all: on the Zero W the wlan0 device unit is registered ~15s
+# after the firmware is up, so instead hostapd starts as soon as systemd is up
+# and fails fast every 3s until wlan0 appears. Puts the SSID on the air
+# ~35s earlier than the packaged unit.
+[Unit]
+Description=Rouge Sur Mesure hotspot (hostapd)
+StartLimitIntervalSec=0
+
+[Service]
+Type=forking
+PIDFile=/run/hostapd.pid
+ExecStartPre=-/usr/sbin/rfkill unblock wlan
+ExecStart=/usr/sbin/hostapd -B -P /run/hostapd.pid /etc/hostapd/hostapd.conf
+# the hotspot address goes on once the AP is up (-B returns then)
+ExecStartPost=/usr/sbin/ip addr replace 10.42.0.1/24 dev wlan0
+# the boot-time polling, and recovery if hostapd ever dies
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

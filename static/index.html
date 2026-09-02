@@ -1,0 +1,109 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rouge Sur Mesure</title>
+<link rel="stylesheet" href="/app.css" />
+
+<main>
+  <header>
+    <h1>Rouge Sur Mesure</h1>
+    <span id="pill" class="pill"
+      ><span id="pilltext">Disconnected</span>
+      <span id="batt" class="batt" hidden
+        ><span class="bar"><i id="battbar"></i></span> <b id="battpct"></b></span
+    ></span>
+    <button id="refresh" onclick="post('/refresh')" title="Re-read cartridges" aria-label="Refresh">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />
+      </svg>
+    </button>
+    <button id="toggle" class="primary" onclick="toggle()">Connect</button>
+  </header>
+  <div id="err" class="err"></div>
+  <p id="hello" class="muted" hidden>Connect the device to begin.</p>
+
+  <div id="cartsPanel" hidden>
+    <h2>Cartridges</h2>
+    <div id="cards" class="grid"></div>
+  </div>
+
+  <div id="dispensePanel" hidden>
+    <h2>Dispense</h2>
+    <div class="card mix">
+      <div class="picker">
+        <div class="wheelwrap">
+          <canvas
+            id="wheel"
+            width="440"
+            height="332"
+            onpointerdown="wheelpick(event)"
+            onpointermove="event.buttons && wheelpick(event)"
+            title="Click or drag to pick a blend"
+          ></canvas>
+          <span id="marker" class="marker"></span>
+          <span id="preview" class="preview" role="img" aria-label="Colour preview"></span>
+        </div>
+        <small class="hint">tap or drag to pick</small>
+      </div>
+      <div class="controls">
+        <div id="palette" class="palette"></div>
+        <div id="sliders"></div>
+        <div class="actions">
+          <label
+            >Total amount
+            <span class="unit"
+              ><input
+                id="amount"
+                type="number"
+                min="1"
+                value="612"
+                oninput="update()"
+                title="Dose in microlitres (1 unit = 1 µL on the wire), the app's full application was 612 µL = 0.612 mL"
+              />µL</span
+            ><span id="amountml" class="muted"></span></label>
+          <button id="save" onclick="saveFav()" title="Save this blend as a favourite">Save</button>
+          <button id="dispense" class="primary" onclick="dispense()">Dispense</button>
+        </div>
+        <span id="last" class="muted"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="favsPanel" hidden>
+    <h2>Favourites</h2>
+    <div id="favs" class="grid"></div>
+  </div>
+
+  <details id="frames" hidden>
+    <summary>Frames</summary>
+    <pre id="log"></pre>
+  </details>
+</main>
+
+<dialog id="confirm" class="confirm">
+  <div class="confirm-body">
+    <span id="confirmSwatch" class="dot"></span>
+    <p id="confirmMsg"></p>
+  </div>
+  <form method="dialog" class="confirm-actions">
+    <button value="cancel">Cancel</button>
+    <button value="ok" class="primary">Confirm</button>
+  </form>
+</dialog>
+
+<dialog id="savedlg" class="confirm">
+  <div class="confirm-body">
+    <span id="saveSwatch" class="dot"></span>
+    <div style="flex: 1">
+      <p style="margin: 0 0 0.6rem">Save this blend as a favourite</p>
+      <input id="favname" type="text" maxlength="40" placeholder="Name" />
+    </div>
+  </div>
+  <form method="dialog" class="confirm-actions">
+    <button type="button" onclick="$('savedlg').close('cancel')">Cancel</button>
+    <button value="ok" class="primary">Save</button>
+  </form>
+</dialog>
+
+<script type="module" src="/app.js"></script>

@@ -1,0 +1,15 @@
+# Replaces the packaged dnsmasq.service, which waits for network.target and so
+# would hand out addresses ~20s after the SSID is already visible (see
+# hostapd.service). Reads only the hotspot config, bind-dynamic in there copes
+# with wlan0 appearing after it starts.
+[Unit]
+Description=Rouge Sur Mesure hotspot DHCP and DNS (dnsmasq)
+After=hostapd.service
+
+[Service]
+ExecStart=/usr/sbin/dnsmasq --keep-in-foreground --conf-file=/etc/dnsmasq.d/rsm-hotspot.conf
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,750 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f5efe6; /* paper */
+  --card: #fbf7ef; /* raised paper: dialogs, log */
+  --line: #ddd2c2; /* decorative hairline */
+  --strong: #8a7a68; /* essential control borders, 3.6:1 on paper */
+  --edge: rgba(32, 27, 22, 0.18); /* hairline on colour swatches */
+  --text: #201b16; /* ink, 14.9:1 */
+  --muted: #6b5e51; /* 5.5:1 */
+  --accent: #8e2434; /* lacquer, 7.5:1 as text on paper */
+  --primary-bg: #8e2434; /* solid lacquer button */
+  --primary-ink: #faf5ec; /* text on lacquer, 7.9:1 */
+  --primary-hover: #741d2a; /* 9.9:1 with the ink */
+  --ok: #1f6b43; /* 5.7:1 */
+  --bad: #9d2f2f; /* 6.4:1 */
+  --warn: #8a5a12; /* 5.4:1 */
+  --skel-hi: #ece4d6;
+  --shadow: 0 1rem 3rem rgba(32, 27, 22, 0.25);
+  --fast: 120ms ease-out;
+  --serif: "Didot", "Bodoni MT", "Playfair Display", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1512; /* cocoa */
+    --card: #241e19;
+    --line: #40372e;
+    --strong: #8d7e6d;
+    --edge: rgba(236, 229, 218, 0.2);
+    --text: #ece5da; /* 14.5:1 */
+    --muted: #ab9c8d; /* 6.8:1 */
+    --accent: #e08585; /* 6.8:1 as text on cocoa */
+    --primary-bg: #942a3a; /* lacquer holds its depth in the dark, 6.5:1 with the ink */
+    --primary-ink: #f2e8dc;
+    --primary-hover: #7c2331; /* 8.1:1 with the ink */
+    --ok: #5fb381; /* 7.1:1 */
+    --bad: #d98d7c; /* 6.9:1 */
+    --warn: #d9a55f; /* 8.1:1 */
+    --skel-hi: #322a23;
+    --shadow: 0 1rem 3rem rgba(0, 0, 0, 0.6);
+  }
+}
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+body {
+  font:
+    15px/1.5 system-ui,
+    sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+main {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 2.2rem 1.2rem 4rem;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* masthead: serif title over a double rule, status reads as a folio line */
+header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem 1.1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--text);
+  padding-bottom: 0.9rem;
+  position: relative;
+}
+header::after {
+  /* second, thinner rule of the double line */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  border-bottom: 1px solid var(--line);
+}
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 5vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  margin: 0;
+  flex: 1;
+}
+
+/* section labels: tracked caps sitting on a hairline that runs to the margin */
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin: 2.6rem 0 1.1rem;
+}
+h2::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+
+/* connection status: plain folio text with a state dot, no pill box */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.pill::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--bad);
+}
+.pill.on::before {
+  background: var(--ok);
+}
+
+button {
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.6rem 1.1rem;
+  border-radius: 0;
+  border: 1px solid var(--strong);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background var(--fast),
+    color var(--fast),
+    border-color var(--fast);
+}
+button:hover:not(:disabled) {
+  border-color: var(--text);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+#refresh {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  padding: 0.55rem 0.65rem;
+  line-height: 1;
+}
+button.primary {
+  background: var(--primary-bg);
+  color: var(--primary-ink);
+  border-color: var(--primary-bg);
+}
+button.primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+header button {
+  align-self: center;
+}
+
+/* cards are flat paper: sections separate by rules and air, not boxes */
+.card {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.batt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
+  border-left: 1px solid var(--line);
+  padding-left: 0.55rem; /* divider between status and battery in the folio line */
+}
+.batt .bar {
+  width: 3rem;
+  height: 0.35rem;
+}
+.bar {
+  display: inline-block;
+  width: 6rem;
+  height: 0.4rem;
+  background: var(--line);
+  vertical-align: middle;
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+}
+.fill {
+  /* usage bar with its percentage alongside */
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+.fill small {
+  display: inline;
+  font-variant-numeric: tabular-nums;
+}
+.fill .bar {
+  flex: none;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.8rem;
+}
+
+/* cartridges: three spec columns divided by vertical hairlines */
+#cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+.cart {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.2rem 1.2rem;
+  position: relative; /* anchors the PRIME button in the top-right corner */
+}
+.cart > div {
+  min-width: 0; /* let the text block shrink and wrap instead of pushing PRIME out */
+}
+.cart:first-child {
+  padding-left: 0;
+}
+.cart + .cart {
+  border-left: 1px solid var(--line);
+}
+.cart b,
+.favtext b {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+/* favourites: an index, one entry per rule-separated row */
+#favs {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+.favsep {
+  margin: 1.6rem 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+.fav {
+  display: flex;
+  gap: 0.6rem;
+  align-items: stretch;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+  transition: background var(--fast);
+}
+.fav:first-child {
+  border-top: 0; /* the section heading already draws this rule */
+}
+.favbody {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  color: inherit;
+}
+.favbody:disabled {
+  opacity: 1; /* the row's .off already dims, don't double-fade */
+  cursor: default;
+}
+.fav .favbody:hover:not(:disabled) {
+  background: none; /* the row tint signals hover, not an inner fill */
+  border-color: transparent;
+}
+.favtext {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.dot {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  flex: none;
+  border: 1px solid var(--edge);
+}
+.cart small,
+.fav small,
+.muted {
+  color: var(--muted);
+  font-size: 0.82rem;
+  display: block;
+}
+.cart small .warn {
+  color: var(--warn);
+  font-weight: 700;
+}
+.cart small .bad {
+  color: var(--bad);
+  font-weight: 700;
+}
+.chip.miss {
+  color: var(--bad);
+  font-weight: 700; /* this cartridge isn't loaded */
+}
+.fav.ready:hover {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+.fav.off {
+  opacity: 0.5; /* tamed: loaded cartridges don't match, can't load */
+}
+.favmix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.7rem;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.minidot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  border: 1px solid var(--edge);
+}
+.fav .del {
+  align-self: center;
+  min-width: 1.75rem;
+  min-height: 1.75rem; /* 28px, above the 24px WCAG 2.5.8 floor */
+  padding: 0.2rem 0.45rem;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  border-color: transparent; /* quiet until the row is engaged */
+}
+.fav:hover .del,
+.fav .del:focus-visible {
+  border-color: var(--strong);
+}
+.prime {
+  /* top-right of the card, out of the flow so batch/expiry get the full width */
+  position: absolute;
+  top: 0.2rem;
+  right: 1.2rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.66rem;
+}
+
+/* the mixer is the hero: big wheel left, controls right, no box around it */
+.mix {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+.picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+.wheelwrap {
+  position: relative;
+}
+.preview {
+  /* the blend to dispense, nested in the triangle's empty top-left corner */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid var(--bg); /* same ring language as the marker */
+  box-shadow:
+    0 1px 6px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px var(--edge);
+  pointer-events: none; /* drags across it still pick */
+}
+.marker {
+  /* sits on the wheel at the picked point, wearing the blend */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+  box-shadow:
+    0 1px 6px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px var(--edge);
+  transform: translate(-50%, -50%);
+  pointer-events: none; /* drags land on the canvas underneath */
+}
+.hint {
+  display: block;
+  text-align: center;
+  max-width: 18rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  font-family: var(--serif);
+  letter-spacing: 0.02em;
+}
+#wheel {
+  display: block;
+  cursor: crosshair;
+  touch-action: none; /* finger drags pick, not scroll */
+  width: min(19rem, calc(100vw - 6rem));
+  height: auto; /* keeps the canvas's 440:332 triangle bounding box */
+}
+
+/* preset blends: a tray of product rounds */
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.2rem;
+}
+.sw {
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px var(--edge);
+  transition: border-color var(--fast);
+}
+.palette .sw:hover:not(:disabled),
+.sw.sel {
+  background: none; /* inline swatch colour shows through; undo the generic button hover */
+  border-color: var(--text);
+}
+input[type="range"] {
+  accent-color: var(--accent); /* the lacquer thumb, the dot beside it carries the colour */
+}
+.slider {
+  display: grid;
+  grid-template-columns: 1.4rem 6rem 1fr 3.4rem 3.6rem;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0.35rem 0;
+  font-size: 0.9rem;
+}
+.slider .dot {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.slider input[type="range"] {
+  width: 100%;
+  height: 1.75rem; /* comfortable touch target without changing the row rhythm */
+}
+.slider span:nth-child(4),
+.slider span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+.slider span:last-child {
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: right;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  width: 100%; /* palette, sliders and actions span the section under the centred wheel */
+}
+.actions {
+  padding-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end; /* Total amount + buttons all to the right */
+  margin-top: 0.4rem;
+  border-top: 1px solid var(--line); /* the ledger line above the transaction */
+}
+.actions label {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.unit {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.45rem;
+  padding-right: 0.1rem;
+  border-bottom: 1px solid var(--strong); /* underlined entry, like a printed form field */
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.unit:focus-within {
+  border-color: var(--accent);
+  outline: 1px solid transparent; /* the underline thickens instead of a box ring */
+  box-shadow: 0 1px 0 var(--accent);
+}
+.actions input {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  width: 4.2rem;
+  padding: 0.3rem 0.4rem;
+  border: 0;
+  background: none;
+  color: var(--text);
+  outline: none;
+}
+#amountml {
+  display: inline;
+  margin-left: 0.45rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+#last {
+  margin-top: 0.7rem;
+  text-align: right;
+  font-size: 0.75rem;
+  font-style: italic;
+  font-family: var(--serif);
+}
+#last:empty {
+  display: none;
+}
+.err {
+  color: var(--bad);
+  margin-top: 0.8rem;
+}
+.err:empty {
+  display: none;
+}
+#hello {
+  margin-top: 1.2rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1rem;
+}
+
+.confirm {
+  border: 1px solid var(--text);
+  border-radius: 0;
+  padding: 1.4rem;
+  max-width: 24rem;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+.confirm::backdrop {
+  background: rgba(20, 15, 12, 0.45);
+}
+.confirm-body {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+}
+.confirm-body p {
+  margin: 0;
+}
+.confirm input {
+  font: inherit;
+  width: 100%;
+  padding: 0.4rem 0.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--strong);
+  border-radius: 0;
+  background: none;
+  color: var(--text);
+}
+.confirm input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 1px 0 var(--accent);
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin: 1.4rem 0 0;
+}
+details {
+  margin-top: 2.6rem;
+  color: var(--muted);
+}
+summary {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+}
+pre {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 0.7rem;
+  font-size: 0.75rem;
+  max-height: 16rem;
+  overflow: auto;
+  color: var(--text);
+}
+@media (max-width: 34rem) {
+  header {
+    gap: 0.6rem 0.7rem;
+  }
+  h1 {
+    flex: none;
+    flex-basis: 100%;
+  }
+  #pill {
+    flex-basis: 100%;
+  }
+  #toggle {
+    flex: 1;
+  }
+}
+.skel {
+  background: linear-gradient(100deg, var(--line) 30%, var(--skel-hi) 50%, var(--line) 70%);
+  background-size: 220% 100%;
+  animation: sh 1.3s ease-in-out infinite;
+  border-radius: 0;
+  color: transparent !important;
+}
+.preview.skel,
+.dot.skel,
+#wheel.skel,
+.sw.skel {
+  border-radius: 50%;
+}
+@keyframes sh {
+  from {
+    background-position: 180% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .confirm[open] {
+    animation: pop var(--fast);
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+  }
+  button,
+  .fav {
+    transition: none;
+  }
+  button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* narrow screens (kept last so it overrides the base rules above): everything stacks at the same breakpoint */
+@media (max-width: 42rem) {
+  #cards {
+    grid-template-columns: 1fr;
+  }
+  .cart {
+    padding: 0.6rem 0;
+  }
+  .cart .prime {
+    /* stacked cards are tall enough to centre the button vertically */
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0;
+  }
+  .cart:first-child {
+    padding-top: 0;
+  }
+  .cart + .cart {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .slider {
+    /* two lines: dot, name, % and units, then the range full width below */
+    grid-template-columns: 1.4rem 1fr auto auto;
+    gap: 0.4rem 0.6rem;
+  }
+  .slider input[type="range"] {
+    grid-column: 1 / -1;
+    order: 1;
+  }
+  .actions {
+    gap: 0.8rem;
+  }
+  .actions label {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* amount on its own row, buttons share the next */
+  }
+  #save {
+    flex: 1;
+  }
+  #dispense {
+    flex: 2;
+  }
+  .actions button {
+    min-height: 2.75rem; /* 44px thumb-friendly targets for the two real actions */
+  }
+  .fav .del {
+    border-color: var(--strong); /* no hover on touch, keep it visible */
+  }
+}

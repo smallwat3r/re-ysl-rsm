@@ -1,0 +1,22 @@
+[Unit]
+Description=Rouge Sur Mesure control page
+After=bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+# pi/setup.sh installs this with User and the paths filled in. RSM_ADDRESS and
+# RSM_LAN come from the repo's .env, the same file the Makefile uses. The
+# user must be able to use Bluetooth (pi is in the bluetooth group already).
+User=pi
+WorkingDirectory=/home/pi/re-ysl-rsm
+EnvironmentFile=/home/pi/re-ysl-rsm/.env
+ExecStart=/home/pi/re-ysl-rsm/.venv/bin/python app.py
+Restart=always
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
