@@ -11,6 +11,9 @@
 #   make pair              # once, with the device awake (bonds are per machine)
 #   sudo reboot            # everything comes up on its own from now on
 #
+# pi/setup.sh --uninstall reverses all of it (services, hotspot, journald,
+# cloud-init), leaving apt packages, Bluetooth AutoEnable and the checkout.
+#
 # The Pi has one radio, so while the hotspot is up it is off your home Wi-Fi:
 # reach it through the hotspot (ssh pi@10.42.0.1). To get it back online for a
 # git pull see pi/hotspot/NetworkManager.conf. A reboot brings the hotspot back.
@@ -19,6 +22,10 @@ set -euo pipefail
 UNITS=(rsm.service) # plus rsm-portal.service when the hotspot is configured
 
 main() {
+  if [[ ${1:-} == --uninstall ]]; then
+    uninstall
+    return
+  fi
   preflight
   install_packages
   enable_bluetooth
@@ -28,6 +35,7 @@ main() {
   if [[ -n ${RSM_HOTSPOT_SSID:-} ]]; then
     configure_hotspot
   else
+    step "no RSM_HOTSPOT_SSID in .env, no hotspot (page served on the home Wi-Fi)"
     remove_hotspot
   fi
   printf '\ndone. Next: make pair (device awake), then sudo reboot.\n'
@@ -165,7 +173,6 @@ configure_hotspot() {
 }
 
 remove_hotspot() {
-  step "no RSM_HOTSPOT_SSID in .env, no hotspot (page served on the home Wi-Fi)"
   # a hotspot from an earlier run would otherwise keep coming up at boot
   sudo systemctl disable --now hostapd dnsmasq >/dev/null 2>&1 || true
   sudo rm -f /etc/NetworkManager/conf.d/rsm-hotspot.conf /etc/hostapd/hostapd.conf \
@@ -173,6 +180,29 @@ remove_hotspot() {
   sudo nmcli connection delete rsm-hotspot >/dev/null 2>&1 || true # earlier versions
   sudo nmcli general reload conf
   sudo nmcli device set wlan0 managed yes >/dev/null 2>&1 || true
+}
+
+# Reverse everything main() set up. Leaves apt packages and the Bluetooth
+# AutoEnable tweak alone (harmless), and keeps the checkout and any BLE bond.
+uninstall() {
+  cd "$(dirname "$0")/.."
+  sudo -n true 2>/dev/null || sudo -v
+
+  step "services off"
+  sudo systemctl disable --now rsm.service rsm-portal.service 2>/dev/null || true
+  sudo rm -f /etc/systemd/system/rsm.service /etc/systemd/system/rsm-portal.service
+
+  remove_hotspot
+
+  step "journal back on disk"
+  sudo rm -f /etc/systemd/journald.conf.d/rsm-volatile.conf
+  sudo systemctl restart systemd-journald
+
+  step "cloud-init back on"
+  sudo rm -f /etc/cloud/cloud-init.disabled
+
+  sudo systemctl daemon-reload
+  printf '\nuninstalled. Left in place: apt packages, Bluetooth AutoEnable, the checkout.\n'
 }
 
 main "$@"
